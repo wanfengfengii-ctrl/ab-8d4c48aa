@@ -1,0 +1,28 @@
+name: nanopore-aligner
+
+services:
+  api:
+    build: .
+    ports:
+      # Configurable host port: API_PORT=9000 docker compose up api
+      - "${API_PORT:-8000}:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request,sys;sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=2).status==200 else 1)"
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+  verify:
+    build: .
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_BASE_URL: http://api:8000
+    command: ["python", "verify/verify.py"]
+    restart: "no"

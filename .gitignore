@@ -11,3 +11,8 @@ __pycache__/
 .nox/
 .pnpm-store/
 *.py[cod]
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
